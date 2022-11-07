@@ -222,6 +222,7 @@ dataset_final = dataset_final |>
 
 
 ###Graphs####
+library(ggplot2)
 
 #So, I have a left quite a view variables in the dataset, but the main relationship we are
 #concerned with is renewable energy percentage and whether or not there is trend based upon
@@ -261,12 +262,12 @@ dataset_final_new = dataset_final_new |>
                                  ifelse(group_avg ==30.30, "Blue",
                                         ifelse(group_avg==22.28, "Purple", 0))))
 
+barplot_data = dataset_final_new[,-c(1:24)]
 
-#Show distribution of Renewable energy % in dataset
-hist(dataset_final$Renewables)
-hist(log(dataset_final$Renewables))
+barplot_data = barplot_data[-c(1:2),]
+barplot_data = barplot_data[-c(4:48),]
 
-library(ggplot2)
+
 
 
 
@@ -274,10 +275,26 @@ library(ggplot2)
 
 #Graph showing relationship between renewables % and states
 
-ggplot(dataset_final_new, aes(x=state_category, y=group_avg)) +
-  geom_bar(stat = "identity") 
+graph_1 = ggplot(barplot_data, aes(x=state_category, y=group_avg, fill=state_category)) +
+  geom_bar(stat = "identity") + labs(y= "% Renewable Energy" , x = "State Category")
   
+color <- data.frame(state_cat=c("Purple","Red","Blue"),
+                  renew=c(22,27,30))
+
+graph_1_color <- ggplot(data=color, aes(x=state_cat, y=renew,fill=state_cat))+
+  geom_bar(stat="identity")+
+  scale_fill_manual(values=c("blue",
+                             "purple",
+                             "red")) + labs(y= "% Renewable Energy" , x = "State Category") + 
+  theme(legend.position = "none")
+graph_1_color
 #Based on the above graph, we can see that actually, there doesn't appear to be much of an impact
-#of being a red state on the amount of energy consumption
+#of being a red state on the amount of energy consumption. But being a purple state shows much
+#less energy consumption
+
+
+#Other relationships I may want to show: Energy and GDP, Wind percent and renewable
+
+
   
   
