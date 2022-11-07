@@ -186,6 +186,9 @@ governors_new = cbind(governors,fiftystates)
 governors_final = governors_new[,-c(1:2)] 
 names(governors_final)[names(governors_final) == "fiftystates"] = "state"
 
+#Change name of 
+governors_final[governors_final == "NM."] = "NM"
+
 ###BIG DATASET WORK####
 
 #Make the  names of the Unique ID column, states, the same in each dataset
@@ -201,6 +204,7 @@ names(joined_2)[names(joined_2) == "rep"] <- "republican governor"
 
 joined_2 = joined_2 |>
   mutate(trump_vote = ifelse(candidate == "DONALD J TRUMP", 1, 0))
+
 
 dataset_final = joined_2[,-c(18)]
 
@@ -250,7 +254,6 @@ dataset_final_new = dataset_final_new |>
                             ifelse(blue_blue ==1, 30.30,
                                    ifelse(blue_blue==0 & red_red ==0,22.28,0))))
 
-dataset_final_new = dataset_final_new[,-c(22:25)] 
 
 #Create categorical column for barchart
 dataset_final_new = dataset_final_new |>
@@ -270,14 +273,11 @@ library(ggplot2)
 
 
 #Graph showing relationship between renewables % and states
+
 ggplot(dataset_final_new, aes(x=state_category, y=group_avg)) +
-  geom_bar(stat = "identity") + 
+  geom_bar(stat = "identity") 
   
-  #Based on the above graph, we can see that actually, there doesn't appear to be much of an impact
-  #of being a red state on the amount of energy consumption
+#Based on the above graph, we can see that actually, there doesn't appear to be much of an impact
+#of being a red state on the amount of energy consumption
   
   
-  Another 
-
-
-blah blah blah
