@@ -212,7 +212,7 @@ dataset_final = joined_2[,-c(18)]
 names(dataset_final)[names(dataset_final) == "Gross Domestic Product ($ billion)"] <- "GDP"
 names(dataset_final)[names(dataset_final) == "Renewables (%)"] <- "Renewables"
 names(dataset_final)[names(dataset_final) == "Motor Gasoline (Excludes Pipelines) (thousand barrels)"] <- "Motor Gas"
-
+names(dataset_final)[names(dataset_final) == "Small-Scale Solar Photovoltaic Generation (thousand MWh)"] <- "Solar"
 
 dataset_final = dataset_final |>
   mutate(red_red = ifelse(trump_vote == 1 & `republican governor` == 1, 1, 0))
@@ -279,21 +279,75 @@ graph_1 = ggplot(barplot_data, aes(x=state_category, y=group_avg, fill=state_cat
   geom_bar(stat = "identity") + labs(y= "% Renewable Energy" , x = "State Category")
   
 color <- data.frame(state_cat=c("Purple","Red","Blue"),
-                  renew=c(22,27,30))
+                  renew=c(22.28,27.78,30.30))
 
 graph_1_color <- ggplot(data=color, aes(x=state_cat, y=renew,fill=state_cat))+
   geom_bar(stat="identity")+
   scale_fill_manual(values=c("blue",
                              "purple",
                              "red")) + labs(y= "% Renewable Energy" , x = "State Category") + 
-  theme(legend.position = "none")
+  theme(legend.position = "none") + geom_col(colour = "black") +  geom_text(aes(label = renew), vjust = -1, colour = "black") +
+  ylim(0,33)
 graph_1_color
+
 #Based on the above graph, we can see that actually, there doesn't appear to be much of an impact
 #of being a red state on the amount of energy consumption. But being a purple state shows much
-#less energy consumption
+#less renewable energy consumption
+
+
+names(dataset_final_new)[names(dataset_final_new) == "Precipitation (inches)"] <- "precip"
+
+graph_2 = ggplot(data = dataset_final_new_2, aes(x = as.numeric(as.character(Solar)), y = as.numeric(as.character(precip)), col = state_category)) +
+  geom_point() + scale_color_manual(values=c("blue", "purple", "red"))
+graph_2
+
+#Here we compare all states precipitation levels with their solar production. 
+#I would expect to see a negative relationship between solar production and precip.
+#We notice all states produce less than 500 MWh of solar energy except for CA. Remove this
+
+graph_2.0 = ggplot(data = dataset_final_new_2, aes(x = as.numeric(as.character(Solar)), y = as.numeric(as.character(precip)), col = state_category)) +
+  geom_point() + scale_color_manual(values=c("blue", "purple", "red")) + 
+  xlim(0,500)
+
+graph_2.0
+
+#See that their really is no relationship between state politics and solar energy production,
+#or rain and solar energy production. Although this is not taking into account state size.
+
+graph_2.1 = ggplot(data = dataset_final_new_2, aes(x = as.numeric(as.character(Solar)), y = as.numeric(as.character(precip)), col = state_category)) +
+  geom_point() + scale_color_manual(values=c("blue", "purple", "red")) + 
+  xlim(0,100)
+
+graph_2.1
+
+#If we observe the 35 states with less than 100 MWh of solar energy production, we do see 
+#18 red states, and just 10 blue states, insinuating that red states may be less likely to 
+#begin solar energy programs at all. In addition, among the lowest tier of rainfall here,
+#we observe 4 states with essentially no solar energy, all red states. 
+
+graph_3 = ggplot(data = dataset_final_new_2, aes(x = state, y = Renewables, col = state_category, label=state)) +
+  geom_point() + scale_color_manual(values=c("blue", "purple", "red")) +geom_text(hjust=0, vjust=-0.5, size = 3) + theme(axis.text.x=element_blank(),
+  axis.ticks.x=element_blank()) + xlab("State") + ylab("Renewable Energy (% electricity generation)")
+
+  graph_3
+
+dataset_final_new_2$Solar = as.numeric(dataset_final$Solar)
+final_dataset = dataset_final_new_2 |> mutate(new_solar = Solar/GDP)
+final_dataset$new_solar = as.numeric(final_dataset$new_solar)
+final_dataset$precip = as.numeric(final_dataset$precip)
+
+graph_4 = ggplot(data = final_dataset, aes(x = new_solar, y = precip, col = state_category)) +
+  geom_point() + scale_color_manual(values=c("blue", "purple", "red")) + xlim(0,1)
+
+graph_4
+graph_2.0
+#Compare graphs 2 and 4 to show if taking the percent of solar by GDP (contolling)
+#for population does anything.
 
 
 #Other relationships I may want to show: Energy and GDP, Wind percent and renewable
+
+
 
 
   
