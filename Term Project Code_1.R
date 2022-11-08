@@ -363,10 +363,45 @@ graph_5.0 = ggplot(data = final_dataset, aes(x = new_solar, y = avg_temp, col = 
 graph_5.0
 
 
+#Take out a temperature outlier, Alaska, below.
+graph_5.0.1 = ggplot(data = final_dataset, aes(x = new_solar, y = avg_temp, col = state_category, label = state, group = state_category)) +
+  geom_point() + scale_color_manual(values=c("blue", "purple", "red")) + 
+  geom_text(hjust=1, vjust=1.5, size = 3) + 
+  xlab("Solar Energy") +
+  scale_y_continuous(name = "Average Temperature", limits = c(40,75)) +
+  geom_smooth(method="lm", se = FALSE)
+graph_5.0.1
+
 #Based on this graph, we can see that it there appears to be a positive linear
 #relationship surrounding temperature and solar energy in 
 
+#Change names and set as numeric
+names(final_dataset)[names(final_dataset) == "Carbon Dioxide (thousand metric tons)"] <- "co2_emissions"
+final_dataset$co2_emissions =  as.numeric(final_dataset$co2_emissions)
+names(final_dataset)[names(final_dataset) == "Civilian Labor Force (million)"] <- "labor_force"
+final_dataset$labor_force =  as.numeric(final_dataset$labor_force)
 
+graph_6 = ggplot(data = final_dataset, aes(x = Renewables, y = co2_emissions, col = state_category, label = state, group = state_category)) +
+  geom_point() + scale_color_manual(values=c("blue", "purple", "red")) + 
+  geom_text(hjust=1, vjust=1.5, size = 3) + 
+  ylab("CO2 Emissions") + 
+  xlab("Renewable Energy %") 
+graph_6
+
+#Yikes, based on this, we see Texas is a huge polluter, despite producing 25%
+#renewable energy.
+
+#If we correct for CO2 by state population below
+
+final_dataset = final_dataset |> mutate(co2_pop = co2_emissions/labor_force)
+
+graph_6.0 = ggplot(data = final_dataset, aes(x = Renewables, y = co2_pop, col = state_category, label = state, group = state_category)) +
+  geom_point() + scale_color_manual(values=c("blue", "purple", "red")) + 
+  geom_text(hjust=1, vjust=1.5, size = 3) + 
+  ylab("CO2 Emissions") + 
+  xlab("Renewable Energy %") 
+
+graph_6.0
 #Other relationships I may want to show: Energy and GDP, Wind percent and renewable
 
 
