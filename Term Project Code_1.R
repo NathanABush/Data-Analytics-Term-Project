@@ -286,8 +286,8 @@ graph_1_color <- ggplot(data=color, aes(x=state_cat, y=renew,fill=state_cat))+
   scale_fill_manual(values=c("blue",
                              "purple",
                              "red")) + labs(y= "% Renewable Energy" , x = "State Category") + 
-  theme(legend.position = "none") + geom_col(colour = "black") +  geom_text(aes(label = renew), vjust = -1, colour = "black") +
-  ylim(0,33)
+  theme(legend.position = "none") + geom_col(colour = "black") +  geom_label(aes(label = renew), vjust = 1.5, colour = "black", fill = "white") +
+  ylim(0,33) +labs(title = "Electricity Generation by State Political Category")
 graph_1_color
 
 #Based on the above graph, we can see that actually, there doesn't appear to be much of an impact
@@ -352,13 +352,19 @@ graph_5 = ggplot(data = final_dataset, aes(x = new_solar, y = avg_temp, col = st
   geom_point() + scale_color_manual(values=c("blue", "purple", "red")) + 
   geom_text(hjust=1, vjust=1.5, size = 3) + 
   ylab("Average Temperature") + 
-  xlab("Solar Energy") +
-  geom_smooth(method="lm", se = FALSE)
-
-
+  xlab("Solar Energy") 
 graph_5
 
+graph_5.0 = ggplot(data = final_dataset, aes(x = new_solar, y = avg_temp, col = state_category, label = state, group = state_category)) +
+  geom_point() + scale_color_manual(values=c("blue", "purple", "red")) + 
+  geom_text(hjust=1, vjust=1.5, size = 3) + 
+  ylab("Average Temperature") + 
+  xlab("Solar Energy") + geom_smooth(method="lm", se = FALSE)
+graph_5.0
 
+
+#Based on this graph, we can see that it there appears to be a positive linear
+#relationship surrounding temperature and solar energy in 
 
 
 #Other relationships I may want to show: Energy and GDP, Wind percent and renewable
