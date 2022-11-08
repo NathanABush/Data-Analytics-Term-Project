@@ -296,8 +296,9 @@ graph_1_color
 
 
 names(dataset_final_new)[names(dataset_final_new) == "Precipitation (inches)"] <- "precip"
+names(dataset_final_new)[names(dataset_final_new) == "Average Temperature (degrees Fahrenheit)"] <- "avg_temp"
 
-graph_2 = ggplot(data = dataset_final_new_2, aes(x = as.numeric(as.character(Solar)), y = as.numeric(as.character(precip)), col = state_category)) +
+graph_2 = ggplot(data = dataset_final_new, aes(x = as.numeric(as.character(Solar)), y = as.numeric(as.character(precip)), col = state_category)) +
   geom_point() + scale_color_manual(values=c("blue", "purple", "red"))
 graph_2
 
@@ -305,7 +306,7 @@ graph_2
 #I would expect to see a negative relationship between solar production and precip.
 #We notice all states produce less than 500 MWh of solar energy except for CA. Remove this
 
-graph_2.0 = ggplot(data = dataset_final_new_2, aes(x = as.numeric(as.character(Solar)), y = as.numeric(as.character(precip)), col = state_category)) +
+graph_2.0 = ggplot(data = dataset_final_new, aes(x = as.numeric(as.character(Solar)), y = as.numeric(as.character(precip)), col = state_category)) +
   geom_point() + scale_color_manual(values=c("blue", "purple", "red")) + 
   xlim(0,500)
 
@@ -314,7 +315,7 @@ graph_2.0
 #See that their really is no relationship between state politics and solar energy production,
 #or rain and solar energy production. Although this is not taking into account state size.
 
-graph_2.1 = ggplot(data = dataset_final_new_2, aes(x = as.numeric(as.character(Solar)), y = as.numeric(as.character(precip)), col = state_category)) +
+graph_2.1 = ggplot(data = dataset_final_new, aes(x = as.numeric(as.character(Solar)), y = as.numeric(as.character(precip)), col = state_category)) +
   geom_point() + scale_color_manual(values=c("blue", "purple", "red")) + 
   xlim(0,100)
 
@@ -325,14 +326,14 @@ graph_2.1
 #begin solar energy programs at all. In addition, among the lowest tier of rainfall here,
 #we observe 4 states with essentially no solar energy, all red states. 
 
-graph_3 = ggplot(data = dataset_final_new_2, aes(x = state, y = Renewables, col = state_category, label=state)) +
+graph_3 = ggplot(data = dataset_final_new, aes(x = state, y = Renewables, col = state_category, label=state)) +
   geom_point() + scale_color_manual(values=c("blue", "purple", "red")) +geom_text(hjust=0, vjust=-0.5, size = 3) + theme(axis.text.x=element_blank(),
   axis.ticks.x=element_blank()) + xlab("State") + ylab("Renewable Energy (% electricity generation)")
 
   graph_3
 
-dataset_final_new_2$Solar = as.numeric(dataset_final$Solar)
-final_dataset = dataset_final_new_2 |> mutate(new_solar = Solar/GDP)
+dataset_final_new$Solar = as.numeric(dataset_final$Solar)
+final_dataset = dataset_final_new |> mutate(new_solar = Solar/GDP)
 final_dataset$new_solar = as.numeric(final_dataset$new_solar)
 final_dataset$precip = as.numeric(final_dataset$precip)
 
@@ -343,6 +344,21 @@ graph_4
 graph_2.0
 #Compare graphs 2 and 4 to show if taking the percent of solar by GDP (contolling)
 #for population does anything.
+
+
+names(dataset_final_new)[names(dataset_final_new) == "Average Temperature (degrees Fahrenheit)"] <- "avg_temp"
+
+graph_5 = ggplot(data = final_dataset, aes(x = new_solar, y = avg_temp, col = state_category, label = state, group = state_category)) +
+  geom_point() + scale_color_manual(values=c("blue", "purple", "red")) + 
+  geom_text(hjust=1, vjust=1.5, size = 3) + 
+  ylab("Average Temperature") + 
+  xlab("Solar Energy") +
+  geom_smooth(method="lm", se = FALSE)
+
+
+graph_5
+
+
 
 
 #Other relationships I may want to show: Energy and GDP, Wind percent and renewable
