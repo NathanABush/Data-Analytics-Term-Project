@@ -1,3 +1,11 @@
+---
+title: "Exploratory Analysis"
+author: "Nathan Bush"
+date: "2022-11-08"
+output: html_document
+---
+
+```{r setup, include=FALSE}
 election_2020 = read_csv("/Users/nathanbush/Desktop/Data Analytics/Term Project/2020 election results by county.csv")
 energy = read_csv("/Users/nathanbush/Desktop/Data Analytics/Term Project/Energy Data.csv")
 president = read_csv("/Users/nathanbush/Desktop/Data Analytics/Term Project/President Data (MIT).csv")
@@ -415,23 +423,10 @@ graph_6.0.1
 #Other relationships I may want to show: Energy and GDP, Wind percent and renewable
 
 
+```
 
+## Including Plots
 
-  
-  
-
-###Map####
-library(tigris)
-library(raster)
-states <- states(cb = TRUE)
-
-names(states)[names(states) == "STUSPS"] <- "state"
-final_final <- left_join(final_dataset, states, by = "state")
-
-final_final <- st_as_sf(final_final)
-
-affiliation_map <- tm_shape(final_final)+tm_polygons(col ="state_category", palette = c(Blue = "blue", Red = "red", Purple = "purple")) 
-affiliation_map
-
-energy_map = tm_shape(final_final)+tm_polygons(col ="Renewables", palette =c("Greens"))
-energy_map
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
