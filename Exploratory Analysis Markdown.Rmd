@@ -19,11 +19,11 @@ library(tmap)
 
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
-load("~/Documents/GitHub/Data-Analytics-Term-Project/dataset_final_new.Rdata")
-load("~/Documents/GitHub/Data-Analytics-Term-Project/color.Rdata")
-load("~/Documents/GitHub/Data-Analytics-Term-Project/states.Rdata")
-load("~/Documents/GitHub/Data-Analytics-Term-Project/final_final.Rdata")
-load("~/Documents/GitHub/Data-Analytics-Term-Project/final_dataset.Rdata")
+load("~/Documents/GitHub/Data-Analytics-Term-Project/Relevant Files/dataset_final_new.Rdata")
+load("~/Documents/GitHub/Data-Analytics-Term-Project/Relevant Files/color.Rdata")
+load("~/Documents/GitHub/Data-Analytics-Term-Project/Relevant Files/states.Rdata")
+load("~/Documents/GitHub/Data-Analytics-Term-Project/Relevant Files/final_final.Rdata")
+load("~/Documents/GitHub/Data-Analytics-Term-Project/Relevant Files/final_dataset.Rdata")
 
 ```
 
