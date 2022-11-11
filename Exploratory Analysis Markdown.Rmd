@@ -4,291 +4,42 @@ author: "Nathan Bush"
 date: "2022-11-08"
 output: html_document
 ---
-
-```{r setup, include=FALSE}
-election_2020 = read_csv("/Users/nathanbush/Desktop/Data Analytics/Term Project/2020 election results by county.csv")
-energy = read_csv("/Users/nathanbush/Desktop/Data Analytics/Term Project/Energy Data.csv")
-president = read_csv("/Users/nathanbush/Desktop/Data Analytics/Term Project/President Data (MIT).csv")
-setwd("/Users/nathanbush/Documents/GitHub/Data-Analytics-Term-Project")
-
-### Clean Energy Data #### 
-
-energy_clean = energy[-c(1:9), ]  #remove rows 1-9
-colnames(energy_clean) = energy_clean[1,] #set column names and remove corresponding row
-energy_clean = energy_clean[-c(1), ]  #remove row corresponding to variable names
-
-#Remove data that is unnecessary for our analysis 
-energy_clean = energy_clean[-c(1:2),] 
-energy_clean = energy_clean[-c(3),] 
-energy_clean = energy_clean[-c(4:5),] 
-energy_clean = energy_clean[-c(6),] 
-energy_clean = energy_clean[-c(8:34),]
-energy_clean = energy_clean[-c(8:11),] 
-energy_clean = energy_clean[-c(9),] 
-energy_clean = energy_clean[-c(14:27),] 
-energy_clean = energy_clean[-c(15),] 
-energy_clean = energy_clean[-c(16:51),] 
-energy_clean = energy_clean[-c(20:21),] 
-energy_clean = energy_clean[-c(21:22),] 
-energy_clean = energy_clean[-c(22:25),] 
-
-#Create a state vector including US and DC and another vector with just the fifty states
-state = c("US","AL","AK","AZ", "AR" ,"CA","CO","CT","DE","DC","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM.","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY")
-fiftystates = c("AL","AK","AZ", "AR" ,"CA","CO","CT","DE","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM.","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY")
-
-#Transform matrix from long to wide format
-transpose = t(energy_clean)
-#Make the matrix a dataframe
-transpose = as.data.frame(transpose)
-#Set the column names
-colnames(transpose) = transpose[1,]
-#remove 1st and second row
-transpose = transpose[-c(1:2),] 
-#Add state vector as a variable
-transpose_1 = cbind(transpose, state)
-transpose_1 = as.data.frame(transpose_1)
-
-#reset row names
-rownames(transpose_1) = NULL
-#reaarange data so state variable is in column 1
-energy_clean_2 = transpose_1[,c(22,2:21)]
-
-#Change missing values to N/A
-energy_clean_3 = na_if(energy_clean_2,"--")
-energy_clean_3 = na_if(energy_clean_3,"NM")
-
-#Change * to 0 (These are values less than .5 that were rounded to 0 in dataset)
-energy_clean_3[energy_clean_3 == "*"] <- "0"
-
-#Remove US and DC data  
-energy_clean_3 = energy_clean_3[-c(1), ]
-energy_clean_final = energy_clean_3[-c(9), ]
-
-#Reset row names again...not sure why I have to do this again
-rownames(energy_clean_final) = NULL
-
-#Since, I had to transform NM values, to NM. I need to rename New Mexico as "NM"
-energy_clean_final[energy_clean_final == "NM."] = "NM"
-
-#Remove columns with no observations
-energy_clean_final = energy_clean_final[,-c(12)] 
-energy_clean_final = energy_clean_final[,-c(18:19)] 
-energy_clean_final = energy_clean_final[,-c(14)] 
-
-#This data is now in the format I need to be able to use it, and cleaned sufficiently. 
-
-
-###Clean Presidential Data####
-
-#filter by year(2020)
-president_1 = president |> 
-  filter(year == 2020) |>
-  group_by(candidate)
-
-#Check to see if all voting methods are the same, they aren't cannot delete
-unique(president_1$mode)
-
-#Delete unnecessary columns
-president_1 = president_1[,-c(2) ]
-president_1 = president_1[,-c(4:5) ]
-president_1 = president_1[,-c(8) ]
-
-president_2 = president_1 |>
-  filter(party == "REPUBLICAN" | party == "DEMOCRAT")
-
-president_3 = president_2 |>
-  group_by(state_po, candidate) |>
-  mutate(sum_state = sum(candidatevotes))
-
-#Now, we have a column with the total number of votes for each candidate in each state,
-#and we can begin to clean the data of county information
-
-president_4 = president_3[,-c(1) ]
-president_4 = president_4[,-c(4) ]
-president_4 = president_4[,-c(2) ]
-president_4 = president_4[,-c(3:5) ]
-
-#Now, we can keep only the unique rows in our dataest.
-president_5 = distinct(president_4)
-#Create dummy for who each state voted for
-won = won = c(0,1,0,1,1,0,0,1,1,0,1,0,1,0,1,0,1,0,0,1,1,0,1,0,0,1,1,0,0,1,0,1,0,1,0,1,0,1,1,0,1,0,1,0,0,1,0,1,1,0,1,0,1,0,1,0,1,0,0,1,0,1,1,0,1,0,1,0,0,1,0,1,1,0,0,1,1,0,1,0,0,1,0,1,0,1,0,1,0,1,0,1,0,1,1,0,1,0,1,0,0,1)
-
-#Append the datasets and remove columns that do not correspond to the winning candidate 
-president_6 = cbind(president_5, won)
-president_7 = filter(president_6, ...4 == "1")
-
-#Remove unnecessary columns
-president_final = president_7[,-c(3:4)]
-
-#Remove DC from the observations
-president_final = president_final[-c(9),]
-
-#Presidential data is clean and ready to merge
-
-###Clean Election Data####
-library(tinytex)
-library(rvest)
-
-election = election_2020 |> 
-  filter(won ==TRUE)
-
-sum(election$state == "Delaware")
-#Wow, at first I thought there was a problem with this dataset since Delaware had just 3 counties
-#listed, but it turns out they actually only have 3 counties. 
-
-
-#Create a new dataset that sums the amount of votes of candidate that get above 1000 votes recieved
-new_election = election_2020 %>% 
-  group_by(state, candidate) %>% 
-  summarise(Total = sum(total_votes, na.rm = TRUE))
-
-new_election = new_election |> 
-  filter(candidate == "Joe Biden" | candidate == "Donald Trump")
-
-
-#Now, we have a dataset showing the number of votes by state for Biden and trump in 2020,
-#and we can use that to determine who each state voted for 
-
-#Election data is clean and ready to merge
-
-###Governors Data####
-#Webscrape a table showing State Governors and their party
-
-url = "https://en.wikipedia.org/wiki/List_of_current_United_States_governors"
-page = read_html(url)
-page
-tables = page|> html_elements("table")
-tables
-governors = tables[[2]] |> html_table()
-
-#Make table a dataframe
-governors = as.data.frame(governors)
-
-#Remove unnecessary columns
-governors = governors[,-c(2,4,6:10)] 
-governors = governors[,-c(4)] 
-
-#Set row 1 as variable names,
-colnames(governors) = governors[1,]
-
-#Remove row 1
-governors = governors[-c(1),] 
-#Remove column for name of governor
-governors = governors[,-c(2)]
-
-#Check variables for uniqueness
-unique(governors$Party)
-
-#We can see that there are two observations that don't make sense
-governors[governors == "Republican[note 1]"] = "Republican"
-governors[governors == "Democratic–Farmer–Labor"] = "Democratic"
-unique(governors$Party)
-
-#Create dummy variable for republican governor
-governors = governors |>
-  mutate(rep = ifelse(Party == "Republican", 1, 0))
-
-#Add our previously created fiftystates vector
-governors_new = cbind(governors,fiftystates)
-
-governors_final = governors_new[,-c(1:2)] 
-names(governors_final)[names(governors_final) == "fiftystates"] = "state"
-
-#Change name of 
-governors_final[governors_final == "NM."] = "NM"
-
-###BIG DATASET WORK####
-
-#Make the  names of the Unique ID column, states, the same in each dataset
-names(president_final)[names(president_final) == "state_po"] <- "state"
-
-#Join all three datasets together using left join
-joined = left_join(energy_clean_final, president_final, by = "state")
-joined_2 = left_join(joined, governors_final, by = "state" )
-
-#Change name of rep dummy variable in dataset
-
-names(joined_2)[names(joined_2) == "rep"] <- "republican governor"
-
-joined_2 = joined_2 |>
-  mutate(trump_vote = ifelse(candidate == "DONALD J TRUMP", 1, 0))
-
-
-dataset_final = joined_2[,-c(18)]
-
-#Rename variables in dataset to names easier to work with.
-names(dataset_final)[names(dataset_final) == "Gross Domestic Product ($ billion)"] <- "GDP"
-names(dataset_final)[names(dataset_final) == "Renewables (%)"] <- "Renewables"
-names(dataset_final)[names(dataset_final) == "Motor Gasoline (Excludes Pipelines) (thousand barrels)"] <- "Motor Gas"
-names(dataset_final)[names(dataset_final) == "Small-Scale Solar Photovoltaic Generation (thousand MWh)"] <- "Solar"
-
-dataset_final = dataset_final |>
-  mutate(red_red = ifelse(trump_vote == 1 & `republican governor` == 1, 1, 0))
-
-dataset_final = dataset_final |>
-  mutate(blue_blue = ifelse(trump_vote == 0 & `republican governor` == 0, 1, 0))
-
-
-###Graphs####
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
+library(tidyverse)
+library(dplyr)
 library(ggplot2)
-
-#So, I have a left quite a view variables in the dataset, but the main relationship we are
-#concerned with is renewable energy percentage and whether or not there is trend based upon
-#the states political climate
-
-#set variables to numeric
-dataset_final$"Renewables" =  as.numeric(dataset_final$"Renewables")
-hist(dataset_final$Renewables)
-dataset_final$`Total Expenditures ($ million)` =  as.numeric(dataset_final$"Total Expenditures ($ million)")
-hist(dataset_final$`Total Expenditures ($ million)`)
-dataset_final$GDP =  as.numeric(dataset_final$GDP)
-
-#Create seperate variables for blue, red, and mixed states based on pres vote and gov
-dataset_final_red = dataset_final |> filter(red_red == 1)
-dataset_final_blue = dataset_final |> filter(blue_blue == 1) 
-dataset_final_mixed = dataset_final |> filter(blue_blue == 0 & red_red ==0)
-
-#Take mean Renewable energy % in each of these groups
-dataset_final_new = dataset_final |>
-  mutate(red_renewable = as.vector(mean(dataset_final_red$Renewables)))
-
-dataset_final_new = dataset_final_new |>
-  mutate(blue_renewable = as.vector(mean(dataset_final_blue$Renewables)))
-
-dataset_final_new = dataset_final_new |>
-  mutate(mix_renewable = as.vector(mean(dataset_final_mixed$Renewables)))
-#Create Group Mean Column based upon states with 2 votes red, 2 votes blue, and 1 of each
-dataset_final_new = dataset_final_new |>
-  mutate(group_avg = ifelse(red_red ==1, 27.78,
-                            ifelse(blue_blue ==1, 30.30,
-                                   ifelse(blue_blue==0 & red_red ==0,22.28,0))))
+library(tigris)
+library(raster)
+library(readxl)
+library(sf)
+library(tmap)
+```
 
 
-#Create categorical column for barchart
-dataset_final_new = dataset_final_new |>
-  mutate(state_category = ifelse(group_avg ==27.78, "Red",
-                                 ifelse(group_avg ==30.30, "Blue",
-                                        ifelse(group_avg==22.28, "Purple", 0))))
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
+load("~/Documents/GitHub/Data-Analytics-Term-Project/dataset_final_new.Rdata")
+load("~/Documents/GitHub/Data-Analytics-Term-Project/color.Rdata")
+load("~/Documents/GitHub/Data-Analytics-Term-Project/states.Rdata")
+load("~/Documents/GitHub/Data-Analytics-Term-Project/final_final.Rdata")
+load("~/Documents/GitHub/Data-Analytics-Term-Project/final_dataset.Rdata")
 
-barplot_data = dataset_final_new[,-c(1:24)]
+```
 
-barplot_data = barplot_data[-c(1:2),]
-barplot_data = barplot_data[-c(4:48),]
-
-
-
-
-
-
-
-#Graph showing relationship between renewables % and states
-
-graph_1 = ggplot(barplot_data, aes(x=state_category, y=group_avg, fill=state_category)) +
-  geom_bar(stat = "identity") + labs(y= "% Renewable Energy" , x = "State Category")
+REPORT
   
-color <- data.frame(state_cat=c("Purple","Red","Blue"),
-                  renew=c(22.28,27.78,30.30))
+In this analysis I compare the political leanings of states in the US with the their energy usage statistics and emissions. This is important to understand whether or not political views effect the type of energy states are using. This is important because is can effect and inform policy, show whether or not states are taking advantage of their natural resources, and help usunderstand the dynamics behind energy systems and how politics plays a role in these systems. If we find that conservative leaning states tend to use less renewable energy than their state's natural resources provide, or that liberal states tend to rely excessively on renewable energy when their state is lacking in these resources, then we can assume that more effective policy needs to eb implemented to incentivize states to act more efficiently with their energy generation.
+  
+The data I use in this analysis come from three sources. My first dataset is energy usage statistics on a wide variety of metrics in each state. This is taken from the US Energy Information Administration. Key variables here are the percentages of petroleum, natural gas, coal, and renewable energy as a percentage of the total energy use in the state. My second and third datasets are county voting data on the 2020 presidential election taken from the MIT Election and Data Science lab and the Harvard Dataverse. The variables here are State, County, Candidate, # of votes in each county, total votes. My third dataset is table that webscraped from Wikipedia showing who each state's governor is and which political party they are associated with. My hypothesis is that a state who voted for a republican in the 2020 election and has a republican governor is more conservative than a state that has a democratic governor but voted republican in the 2020 election. I will be able to test whether or not there is any difference in energy usage based on these observed differences by adding in the governor variable. There is a fourth dataset in the start of my code but that did not end up being used.
 
+Cleaning and merging this data was a timely process. I cleaned the energy data by getting rid of unnecessary rows and columns generated in excel and deleting variables unrelated to my analysis. Some of the data had * for values less than 0.5 which were deemed as statistically equal to 0. I changed these values to 0 and adjusted some names to be easier to work with. I deleted total US observations and the DC observation in addition to transposing key rows and columns to get the tidy in tidy format. I made a few other adjustments that are notated in my code as well. For the presidential data, I filtered out all observations for votes other than those for Joe Biden and Donald Trump. I also needed to summarize all vote types, create a new variable that summarized total votes in across counties within states, and create a dummy variable for party. The governor's data was fairly simple to web scrape and import into r. I deleted a a couple of unnecessary variables and named key variables accordingly. 
+
+I merged the data using state as the unique ID and then got to work creating 3 state political categories. Blue, Red, and Purple, I used dummy variables for governor (1 if republican, 0 if not), for president (1 if republican, 0 if not). I then created a variable for state political category where (Blue = 0 for governor dummy & 0 for president dummy, Red = 1 for governor dummy and 1 for president dummy, Purple = 1 in one dummy, 0 in another). I then created another variable mean renewable energy percentage based on state political category and showed this graphically. The units of analysis in this final merged data set vary between variables and are specific to each respective visualization.
+
+I did employ a few transformations throughout the course the project. These are outlined in each visualization, but are primarily based upon adjusting state energy measurement statistics to account for differing state GDP's and populations. I did not remove any outliers in the raw data.
+
+
+Visualization 1
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
 graph_1_color <- ggplot(data=color, aes(x=state_cat, y=renew,fill=state_cat))+
   geom_bar(stat="identity")+
   scale_fill_manual(values=c("blue",
@@ -297,110 +48,63 @@ graph_1_color <- ggplot(data=color, aes(x=state_cat, y=renew,fill=state_cat))+
   theme(legend.position = "none") + geom_col(colour = "black") +  geom_label(aes(label = renew), vjust = 1.5, colour = "black", fill = "white") +
   ylim(0,33) +labs(title = "Electricity Generation by State Political Category")
 graph_1_color
-
-#Based on the above graph, we can see that actually, there doesn't appear to be much of an impact
-#of being a red state on the amount of energy consumption. But being a purple state shows much
-#less renewable energy consumption
+```
+Based on the above graph, we can see the percentage of electricity among groups of states that is generated by renewable energy. We observe that purple states (states with governors whose political party does not align with the way the state voted in the 2020 election) actually produce less of their electricity using renewable energy than either blue states (states with a democratic governor who voted for Joe Biden in 2020) or red states (states with a republican governor who voted for Donald Trump in 2020). This is an interesting result. One hypothesis for this could be that purple states are less efficient at passing legislation due to their conflicting political idealogies than either blue or red states. If renewable energy is objectively in the best interest of agents, passing renewable energy legislation would only be held up by one political attempting to spite the other for leverage purposes.
 
 
-names(dataset_final_new)[names(dataset_final_new) == "Precipitation (inches)"] <- "precip"
-names(dataset_final_new)[names(dataset_final_new) == "Average Temperature (degrees Fahrenheit)"] <- "avg_temp"
+Visualization 2
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
+affiliation_map <- tm_shape(final_final)+tm_polygons(col ="state_category", palette = c(Blue = "blue", Red = "red", Purple = "purple"), legend.show = FALSE)
+affiliation_map
 
-graph_2 = ggplot(data = dataset_final_new, aes(x = as.numeric(as.character(Solar)), y = as.numeric(as.character(precip)), col = state_category)) +
-  geom_point() + scale_color_manual(values=c("blue", "purple", "red"))
-graph_2
+```
+This map is showing us the state category of each state in the US by color. We can use this as a reference for our results going forward. 
 
-#Here we compare all states precipitation levels with their solar production. 
-#I would expect to see a negative relationship between solar production and precip.
-#We notice all states produce less than 500 MWh of solar energy except for CA. Remove this
 
-graph_2.0 = ggplot(data = dataset_final_new, aes(x = as.numeric(as.character(Solar)), y = as.numeric(as.character(precip)), col = state_category)) +
-  geom_point() + scale_color_manual(values=c("blue", "purple", "red")) + 
-  xlim(0,500)
+Visualization 3
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
+energy_map = tm_shape(final_final)+tm_polygons(col ="Renewables", palette =c("Greens"), legend.show = FALSE)
+energy_map
+```
+This map shows the renewable energy percentage by state. Dark states have higher renewable energy percentages. We can see that states west of the Mississippi and concentrated in the northwest and northeast corners of the country seem to have higher percentages of renewable energy production.
 
-graph_2.0
 
-#See that their really is no relationship between state politics and solar energy production,
-#or rain and solar energy production. Although this is not taking into account state size.
 
-graph_2.1 = ggplot(data = dataset_final_new, aes(x = as.numeric(as.character(Solar)), y = as.numeric(as.character(precip)), col = state_category)) +
-  geom_point() + scale_color_manual(values=c("blue", "purple", "red")) + 
-  xlim(0,100)
-
-graph_2.1
-
-#If we observe the 35 states with less than 100 MWh of solar energy production, we do see 
-#18 red states, and just 10 blue states, insinuating that red states may be less likely to 
-#begin solar energy programs at all. In addition, among the lowest tier of rainfall here,
-#we observe 4 states with essentially no solar energy, all red states. 
-
+Visualization 4
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
 graph_3 = ggplot(data = dataset_final_new, aes(x = state, y = Renewables, col = state_category, label=state)) +
   geom_point() + scale_color_manual(values=c("blue", "purple", "red")) +geom_text(hjust=0, vjust=-0.5, size = 3) + theme(axis.text.x=element_blank(),
   axis.ticks.x=element_blank()) + xlab("State") + ylab("Renewable Energy (% electricity generation)")
 
-  graph_3
+graph_3
+```
+In graph 3, we show the percentage of renewable energy by state. We do not see any noteworthy trends based upon political category. It is worth noting that Vermont, a purple state is ran on 100% renewable energy. Very cool.
 
-dataset_final_new$Solar = as.numeric(dataset_final$Solar)
-final_dataset = dataset_final_new |> mutate(new_solar = Solar/GDP)
-final_dataset$new_solar = as.numeric(final_dataset$new_solar)
-final_dataset$precip = as.numeric(final_dataset$precip)
-
-graph_4 = ggplot(data = final_dataset, aes(x = new_solar, y = precip, col = state_category)) +
-  geom_point() + scale_color_manual(values=c("blue", "purple", "red")) + xlim(0,1)
-
-graph_4
-graph_2.0
-#Compare graphs 2 and 4 to show if taking the percent of solar by GDP (contolling)
-#for population does anything.
-
-
-names(dataset_final_new)[names(dataset_final_new) == "Average Temperature (degrees Fahrenheit)"] <- "avg_temp"
-
-graph_5 = ggplot(data = final_dataset, aes(x = new_solar, y = avg_temp, col = state_category, label = state, group = state_category)) +
-  geom_point() + scale_color_manual(values=c("blue", "purple", "red")) + 
-  geom_text(hjust=1, vjust=1.5, size = 3) + 
-  ylab("Average Temperature") + 
-  xlab("Solar Energy") 
-graph_5
-
+Visualization 5
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
 graph_5.0 = ggplot(data = final_dataset, aes(x = new_solar, y = avg_temp, col = state_category, label = state, group = state_category)) +
   geom_point() + scale_color_manual(values=c("blue", "purple", "red")) + 
   geom_text(hjust=1, vjust=1.5, size = 3) + 
   ylab("Average Temperature") + 
   xlab("Solar Energy") + geom_smooth(method="lm", se = FALSE)
 graph_5.0
+```
 
+Above, we create a graph showing solar energy in relation to average temperature. We would expect that states with higher average temperatures employ more solar energy because they have more sunlight. We add a line of best fit to our graph to test whether or not this is the case. We see evidence that blue and red states are employing more solar energy in states with hotter temperatures, while purple states are showing the opposite trend. This MAY lend credence to our initial hypothesis that states with conflicting political interests are less efficient than states with a more uniform political environment. 
 
-#Take out a temperature outlier, Alaska, below.
-graph_5.0.1 = ggplot(data = final_dataset, aes(x = new_solar, y = avg_temp, col = state_category, label = state, group = state_category)) +
-  geom_point() + scale_color_manual(values=c("blue", "purple", "red")) + 
-  geom_text(hjust=1, vjust=1.5, size = 3) + 
-  xlab("Solar Energy") +
-  scale_y_continuous(name = "Average Temperature", limits = c(40,75)) +
-  geom_smooth(method="lm", se = FALSE)
-graph_5.0.1
-
-#Based on this graph, we can see that it there appears to be a positive linear
-#relationship surrounding temperature and solar energy in 
-
-#Change names and set as numeric
-names(final_dataset)[names(final_dataset) == "Carbon Dioxide (thousand metric tons)"] <- "co2_emissions"
-final_dataset$co2_emissions =  as.numeric(final_dataset$co2_emissions)
-names(final_dataset)[names(final_dataset) == "Civilian Labor Force (million)"] <- "labor_force"
-final_dataset$labor_force =  as.numeric(final_dataset$labor_force)
-
+Visualization 6
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
 graph_6 = ggplot(data = final_dataset, aes(x = Renewables, y = co2_emissions, col = state_category, label = state, group = state_category)) +
   geom_point() + scale_color_manual(values=c("blue", "purple", "red")) + 
   geom_text(hjust=1, vjust=1.5, size = 3) + 
   ylab("CO2 Emissions") + 
   xlab("Renewable Energy %") 
 graph_6
+```
+Yikes, based on this, we see Texas is by far the biggest Co2 emitter in the US, despite producing 25% renewable energy. Let's control for population size and graph again below.
 
-#Yikes, based on this, we see Texas is a huge polluter, despite producing 25%
-#renewable energy.
-
-#If we correct for CO2 by state population below
-
+Visualization 7
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
 final_dataset = final_dataset |> mutate(co2_pop = co2_emissions/labor_force)
 
 graph_6.0 = ggplot(data = final_dataset, aes(x = Renewables, y = co2_pop, col = state_category, label = state, group = state_category)) +
@@ -410,23 +114,21 @@ graph_6.0 = ggplot(data = final_dataset, aes(x = Renewables, y = co2_pop, col = 
   xlab("Renewable Energy %") 
 
 graph_6.0
+```
+
+Now, we correct for CO2 amounts based on state population, and get a graph showing CO2 emissions per capita. We see that Wyoming, West Virginia, and South Dakota are significantly above the national average. Texas has entered the middle of the pack now that we adjust for state population. Let's remove the three outliers on the upper end of the spectrum and compare trends by state political category. 
 
 
+Visualization 8
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
 graph_6.0.1 = ggplot(data = final_dataset, aes(x = Renewables, y = co2_pop, col = state_category, label = state, group = state_category)) +
   geom_point() + scale_color_manual(values=c("blue", "purple", "red")) + 
   geom_text(hjust=1, vjust=1.5, size = 3) + 
   ylab("CO2 Emissions") + 
-  xlab("Renewable Energy %") +ylim(0,30000) +
+  xlab("Renewable Energy %") +ylim(0,25000) +
   geom_smooth(method = "lm", se = FALSE)
 
 graph_6.0.1
-#Other relationships I may want to show: Energy and GDP, Wind percent and renewable
-
-
 ```
 
-## Including Plots
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
+Now, we see that there is a decreasing trend in Co2 per capita with an increase in renewable energy present within each state political category. however, of the 20 states with Co2 emissions per capita of less than 7500 metric tons, just 3 of the states are "red". 
