@@ -1,6 +1,6 @@
 election_2020 = read_csv("/Users/nathanbush/Desktop/Data Analytics/Term Project/2020 election results by county.csv")
-energy = read_csv("/Users/nathanbush/Desktop/Data Analytics/Term Project/Energy Data.csv")
-president = read_csv("/Users/nathanbush/Desktop/Data Analytics/Term Project/President Data (MIT).csv")
+energy = read_csv("/Users/nathanbush/Documents/GitHub/Data-Analytics-Term-Project/Raw Data/Energy Data.csv")
+president = read_csv("/Users/nathanbush/Documents/GitHub/Data-Analytics-Term-Project/Raw Data/President Data (MIT).csv")
 #setwd("YOU MUST ENTER FILE HERE")
 
 ### Clean Energy Data #### 
@@ -70,6 +70,8 @@ energy_clean_final = energy_clean_final[,-c(14)]
 
 ###Clean Presidential Data####
 
+
+
 #filter by year(2020)
 president_1 = president |> 
   filter(year == 2020) |>
@@ -122,7 +124,7 @@ library(rvest)
 
 #Filter by which candidate won in each county
 election = election_2020 |> 
-  filter(won ==TRUE)
+  filter(won =="TRUE")
 
 sum(election$state == "Delaware")
 #Wow, at first I thought there was a problem with this dataset since Delaware had just 3 counties
