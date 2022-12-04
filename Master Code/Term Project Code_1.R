@@ -1,7 +1,11 @@
+library(readxl)
+library(tidyverse)
+library(dplyr)
+library(broom)
 election_2020 = read_csv("/Users/nathanbush/Desktop/Data Analytics/Term Project/2020 election results by county.csv")
 energy = read_csv("/Users/nathanbush/Documents/GitHub/Data-Analytics-Term-Project/Raw Data/Energy Data.csv")
 president = read_csv("/Users/nathanbush/Documents/GitHub/Data-Analytics-Term-Project/Raw Data/President Data (MIT).csv")
-#setwd("YOU MUST ENTER FILE HERE")
+setwd("/Users/nathanbush/Documents/GitHub/Data-Analytics-Term-Project/Master Code")
 
 ### Clean Energy Data #### 
 
@@ -111,9 +115,7 @@ president_6 = cbind(president_5, won)
 president_7 = filter(president_6, ...4 == "1")
 
 #Remove unnecessary columns
-president_final = president_7[,-c(3:4)]
-
-#Remove DC from the observations
+president_final = president_7[,-c(3:4)]#Remove DC from the observations
 president_final = president_final[-c(9),]
 
 #Presidential data is now clean and ready to merge
@@ -299,6 +301,26 @@ graph_3 = ggplot(data = dataset_final_new, aes(x = state, y = Renewables, col = 
 
   graph_3
 
+#Cleveland Dot Plot for graph 3
+dot_plot =  ggplot(dataset_final_new, aes(x = Renewables, y = reorder (state, Renewables), col = state_category, label = state)) +
+    geom_point() + scale_color_manual(values=c("blue", "purple", "red")) +
+  ylab("State") + xlab("Renewable Energy (% electricity generation)") +
+  theme(legend.position = "none")
+dot_plot
+  
+political_cat <- dataset_final_new$state[order(dataset_final_new$state_category, dataset_final_new$Renewables)]
+dataset_final_new$state <- factor(dataset_final_new$state, levels = political_cat)
+  
+dot_plot_2 = ggplot(dataset_final_new, aes(x = Renewables, y = state)) +
+  geom_point(size = 3, aes(colour = state_category)) +
+  scale_color_manual(values=c("blue", "purple", "red"), limits = c("Blue","Purple","Red")) +
+  facet_grid(state_category ~ ., scales = "free_y", space = "free_y") +
+  theme(legend.position = "none") +  
+  ylab("State") + xlab("Renewable Energy (% Electricity Generation)")
+
+dot_plot_2
+
+  
 #Create variables that are divided by state level GDP to control for differences in state size
 dataset_final_new$Solar = as.numeric(dataset_final$Solar)
 final_dataset = dataset_final_new |> mutate(new_solar = Solar/GDP)
@@ -363,18 +385,31 @@ graph_6.0.1
 ###Maps####
 library(tigris)
 library(raster)
+library(tmap)
+library(sf)
 
 #Create Map showing political affiliation
 states <- states(cb = TRUE)
 names(states)[names(states) == "STUSPS"] <- "state"
 final_final <- left_join(final_dataset, states, by = "state")
 final_final <- st_as_sf(final_final)
-affiliation_map <- tm_shape(final_final)+tm_polygons(col ="state_category", palette = c(Blue = "blue", Red = "red", Purple = "purple")) 
+final_map = final_final[-c(2), ]
+final_map = final_map[-c(10), ]
+affiliation_map <- tm_shape(final_map)+tm_polygons(col ="state_category", palette = c(Blue = "blue", Red = "red", Purple = "purple"), title = "Political Category") 
 affiliation_map
 
 #Create map showing renewable energy percentage
-energy_map = tm_shape(final_final)+tm_polygons(col ="Renewables", palette =c("Greens"))
+
+energy_map = tm_shape(final_map)+tm_polygons(col ="Renewables", palette =c("Greens"), title = "Renewable Energy (%)")
 energy_map
+
+#Map without Alaska and Hawaii
+us <- map_data("state")
+map3 = ggplot()+
+  geom_map(data = us, map = us, 
+           aes(col ="state_category", palette = c(Blue = "blue", Red = "red", Purple = "purple"))) 
+
+
 
 #Save dataset 
 save(final_dataset, file = "exploratory_analysis_dataset.Rdata")
@@ -395,3 +430,30 @@ save(color, file = "color.Rdata")
 save(states, file = "states.Rdata")
 save(final_final, file = "final_final.Rdata")
 save(dataset_final_new, file = "dataset_final_new.Rdata")
+
+###Regressions####
+library(estimatr)
+final_dataset$GDP =  as.numeric(final_dataset$GDP)
+final_dataset$avg_temp =  as.numeric(final_dataset$avg_temp)
+final_dataset$Renewables =  as.numeric(final_dataset$Renewables)
+final_dataset$precip =  as.numeric(dataset_final_new$precip)
+final_dataset <- rename(final_dataset,
+                       rep_gov = "republican governor")
+                    
+
+reg_1 = lm(Renewables ~ avg_temp + GDP + precip, data = final_dataset)
+summary(reg_1)
+
+reg_2 = lm(Renewables ~ avg_temp + GDP + precip + state_category, data = final_dataset)
+summary(reg_2)
+
+reg_3 = lm(Renewables ~ avg_temp + GDP + precip + co2_pop + trump_vote * rep_gov, data = final_dataset)
+summary(reg_3)
+summary(reg_3) |> tidy()
+
+reg_4 = lm(co2_pop ~ avg_temp + GDP + precip + Renewables + trump_vote * rep_gov, data = final_dataset)
+summary(reg_4)
+summary(reg_4) |> tidy()
+
+
+
