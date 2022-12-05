@@ -191,7 +191,7 @@ In my econometric analysis, I will be using regression analysis as a first step 
 
 My first regression equation is: 
 
-Renewable Energy (%) = Bo 
+Renewable Energy (%) = Bo + B1....
 
 
 
