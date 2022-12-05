@@ -2,10 +2,12 @@ library(readxl)
 library(tidyverse)
 library(dplyr)
 library(broom)
+library(tinytex)
+library(rvest)
 election_2020 = read_csv("/Users/nathanbush/Desktop/Data Analytics/Term Project/2020 election results by county.csv")
 energy = read_csv("/Users/nathanbush/Documents/GitHub/Data-Analytics-Term-Project/Raw Data/Energy Data.csv")
 president = read_csv("/Users/nathanbush/Documents/GitHub/Data-Analytics-Term-Project/Raw Data/President Data (MIT).csv")
-setwd("/Users/nathanbush/Documents/GitHub/Data-Analytics-Term-Project/Master Code")
+setwd("/Users/nathanbush/Documents/GitHub/Data-Analytics-Term-Project/Relevant Files")
 
 ### Clean Energy Data #### 
 
@@ -121,29 +123,7 @@ president_final = president_final[-c(9),]
 #Presidential data is now clean and ready to merge
 
 ###Clean Election Data####
-library(tinytex)
-library(rvest)
 
-#Filter by which candidate won in each county
-election = election_2020 |> 
-  filter(won =="TRUE")
-
-sum(election$state == "Delaware")
-#Wow, at first I thought there was a problem with this dataset since Delaware had just 3 counties
-#listed, but it turns out they actually only have 3 counties. 
-
-
-#Create a new dataset that sums the amount of votes of candidate that get above 1000 votes recieved
-new_election = election_2020 %>% 
-  group_by(state, candidate) %>% 
-  summarise(Total = sum(total_votes, na.rm = TRUE))
-
-new_election = new_election |> 
-  filter(candidate == "Joe Biden" | candidate == "Donald Trump")
-
-
-#Now, we have a dataset showing the number of votes by state for Biden and trump in 2020,
-#and we can use that to determine who each state voted for, election data clean and ready to merge.
 
 ###Governors Data####
 #Webscrape a table showing State Governors and their party
@@ -311,7 +291,7 @@ dot_plot
 political_cat <- dataset_final_new$state[order(dataset_final_new$state_category, dataset_final_new$Renewables)]
 dataset_final_new$state <- factor(dataset_final_new$state, levels = political_cat)
   
-dot_plot_2 = ggplot(dataset_final_new, aes(x = Renewables, y = state)) +
+dot_plot_2 = ggplot(dataset_final_new, aes(x = Renewables, y = reorder (state, Renewables))) +
   geom_point(size = 3, aes(colour = state_category)) +
   scale_color_manual(values=c("blue", "purple", "red"), limits = c("Blue","Purple","Red")) +
   facet_grid(state_category ~ ., scales = "free_y", space = "free_y") +
@@ -391,9 +371,9 @@ library(sf)
 #Create Map showing political affiliation
 states <- states(cb = TRUE)
 names(states)[names(states) == "STUSPS"] <- "state"
-final_final <- left_join(final_dataset, states, by = "state")
-final_final <- st_as_sf(final_final)
-final_map = final_final[-c(2), ]
+map_1 <- left_join(final_dataset, states, by = "state")
+map_1 <- st_as_sf(map_1)
+final_map = map_1[-c(2), ]
 final_map = final_map[-c(10), ]
 affiliation_map <- tm_shape(final_map)+tm_polygons(col ="state_category", palette = c(Blue = "blue", Red = "red", Purple = "purple"), title = "Political Category") 
 affiliation_map
@@ -403,16 +383,10 @@ affiliation_map
 energy_map = tm_shape(final_map)+tm_polygons(col ="Renewables", palette =c("Greens"), title = "Renewable Energy (%)")
 energy_map
 
-#Map without Alaska and Hawaii
-us <- map_data("state")
-map3 = ggplot()+
-  geom_map(data = us, map = us, 
-           aes(col ="state_category", palette = c(Blue = "blue", Red = "red", Purple = "purple"))) 
-
 
 
 #Save dataset 
-save(final_dataset, file = "exploratory_analysis_dataset.Rdata")
+save(final_dataset, file = "final_dataset.Rdata")
 
 
 
@@ -428,32 +402,35 @@ final_dataset
 save(final_dataset, file = "final_dataset.Rdata")
 save(color, file = "color.Rdata")
 save(states, file = "states.Rdata")
-save(final_final, file = "final_final.Rdata")
+save(map_1, file = "map_1.Rdata")
+save(final_map, file = "final_map.Rdata")
 save(dataset_final_new, file = "dataset_final_new.Rdata")
 
 ###Regressions####
 library(estimatr)
+library(fixest)
+library(modelsummary)
 final_dataset$GDP =  as.numeric(final_dataset$GDP)
 final_dataset$avg_temp =  as.numeric(final_dataset$avg_temp)
 final_dataset$Renewables =  as.numeric(final_dataset$Renewables)
 final_dataset$precip =  as.numeric(dataset_final_new$precip)
-final_dataset <- rename(final_dataset,
-                       rep_gov = "republican governor")
+final_dataset <- rename(final_dataset, rep_gov = "republican governor")
+save(final_dataset, file = "final_dataset.Rdata")
                     
-
-reg_1 = lm(Renewables ~ avg_temp + GDP + precip, data = final_dataset)
+library
+reg_1 = feols(Renewables ~ avg_temp + GDP + precip, data = final_dataset)
 summary(reg_1)
 
-reg_2 = lm(Renewables ~ avg_temp + GDP + precip + state_category, data = final_dataset)
+reg_2 = feols(Renewables ~ avg_temp + GDP + precip + state_category, data = final_dataset)
 summary(reg_2)
 
-reg_3 = lm(Renewables ~ avg_temp + GDP + precip + co2_pop + trump_vote * rep_gov, data = final_dataset)
+reg_3 = feols(Renewables ~ avg_temp + GDP + precip + co2_pop + trump_vote * rep_gov, data = final_dataset)
 summary(reg_3)
 summary(reg_3) |> tidy()
 
-reg_4 = lm(co2_pop ~ avg_temp + GDP + precip + Renewables + trump_vote * rep_gov, data = final_dataset)
+reg_4 = feols(co2_pop ~ avg_temp + GDP + precip + Renewables + trump_vote * rep_gov, data = final_dataset)
 summary(reg_4)
 summary(reg_4) |> tidy()
 
-
+etable(reg_1,reg_2)
 
