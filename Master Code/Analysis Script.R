@@ -20,8 +20,8 @@ load("~/Documents/GitHub/Data Analytics Term Project/Relevant Files/states.Rdata
 load("~/Documents/GitHub/Data Analytics Term Project/Relevant Files/final_map.Rdata")
 load("~/Documents/GitHub/Data Analytics Term Project/Relevant Files/final_dataset.Rdata")
 load("~/Documents/GitHub/Data Analytics Term Project/Relevant Files/final_dataset.Rdata")
-
-
+load("~/Documents/GitHub/Data Analytics Term Project/Relevant Files/dataset_final.Rdata")
+setwd("/Users/nathanbush/Documents/GitHub/Data Analytics Term Project/Master Code")
 
 ###BARCHART####
 
@@ -220,36 +220,13 @@ map_1 <- st_as_sf(map_1)
 final_map = map_1[-c(2), ]
 final_map = final_map[-c(10), ]
 
-hawaii_AK = map_1[-c(12:50), ]
-hawaii_AK = hawaii_AK[-c(3:10),]
-hawaii_AK = hawaii_AK[-c(1),]
-
 affiliation_map <- tm_shape(final_map)+tm_polygons(col ="state_category", palette = c(Blue = "blue", Red = "red", Purple = "purple"), title = "Political Category") 
 affiliation_map
-
-outlier_map <- tm_shape(hawaii_AK)+tm_polygons(col ="Renewables", palette =c("Greens"), title = "Renewable Energy (%)") 
-outlier_map
 
 #Create map showing renewable energy percentage
 
 energy_map = tm_shape(final_map)+tm_polygons(col ="Renewables", palette =c("Greens"), title = "Renewable Energy (%)")
 energy_map
-
-ggplot(data = final_dataset, aes(x = Renewables, y = coal, col = state_category, label = state, group = state_category)) +
-  geom_point() + scale_color_manual(values=c("blue", "purple", "red")) + 
-  geom_text(hjust=1, vjust=1.5, size = 3) + 
-  ylab("coal") + 
-  xlab("Renewable Energy %") +  geom_smooth(method = "lm", se = FALSE)
-
-
-
-###Data to Save for Markdown####
-save(final_dataset, file = "final_dataset.Rdata")
-save(color, file = "color.Rdata")
-save(states, file = "states.Rdata")
-save(map_1, file = "map_1.Rdata")
-save(final_map, file = "final_map.Rdata")
-save(dataset_final_new, file = "dataset_final_new.Rdata")
 
 
 ###Regressions####
@@ -261,9 +238,9 @@ final_dataset$avg_temp =  as.numeric(final_dataset$avg_temp)
 final_dataset$Renewables =  as.numeric(final_dataset$Renewables)
 final_dataset$precip =  as.numeric(dataset_final_new$precip)
 final_dataset <- rename(final_dataset, rep_gov = "republican governor")
-save(final_dataset, file = "final_dataset.Rdata")
 
-library
+
+
 reg_1 = feols(Renewables ~ avg_temp + GDP + precip, data = final_dataset)
 summary(reg_1)
 
@@ -279,3 +256,4 @@ summary(reg_4)
 summary(reg_4) |> tidy()
 
 etable(reg_1,reg_2)
+

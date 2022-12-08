@@ -15,9 +15,9 @@ library(modelsummary)
 library(ggplot2)
 
 election_2020 = read_csv("/Users/nathanbush/Desktop/Data Analytics/Term Project/2020 election results by county.csv")
-energy = read_csv("/Users/nathanbush/Documents/GitHub/Data-Analytics-Term-Project/Raw Data/Energy Data.csv")
-president = read_csv("/Users/nathanbush/Documents/GitHub/Data-Analytics-Term-Project/Raw Data/President Data (MIT).csv")
-setwd("/Users/nathanbush/Documents/GitHub/Data-Analytics-Term-Project/Master Code")
+energy = read_csv("/Users/nathanbush/Documents/GitHub/Data Analytics Term Project/Raw Data/Energy Data.csv")
+president = read_csv("/Users/nathanbush/Documents/GitHub/Data Analytics Term Project/Raw Data/President Data (MIT).csv")
+setwd("/Users/nathanbush/Documents/GitHub/Data Analytics Term Project/Master Code")
 
 
 ######### Clean Energy Data ###############
