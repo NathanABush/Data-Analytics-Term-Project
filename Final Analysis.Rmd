@@ -111,7 +111,7 @@ graph_6 = ggplot(data = final_dataset, aes(x = Renewables, y = co2_emissions, co
   xlab("Renewable Energy %") 
 graph_6
 ```
-In this graph I am looking to see if there is a relationship between Renewable Energy used and CO2 emissions. I am interested to see if there is correlation between the amount of Renewable energy used and amount of CO2 emitted.Based on this graph, we see that Texas is by far the biggest Co2 emitter in the US, despite using 25% renewable energy. Next, I will divide CO2 emissions by population size to see CO2 emissions per capita.
+In this graph I am looking to see if there is a relationship between Renewable Energy used and CO2 emissions. Intuition leads me to believe that there should be a negative linear relationship between the amount of renewable energy used and the amount of CO2 emitted. Based on this graph, we see that Texas is by far the biggest Co2 emitter in the US, despite using 25% renewable energy. Next, I will divide CO2 emissions by population size to see CO2 emissions per capita.
 
 ### Visualization 6
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}

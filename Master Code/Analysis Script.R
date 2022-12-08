@@ -14,6 +14,15 @@ library(fixest)
 library(modelsummary)
 library(ggplot2)
 
+load("~/Documents/GitHub/Data Analytics Term Project/Relevant Files/dataset_final_new.Rdata")
+load("~/Documents/GitHub/Data Analytics Term Project/Relevant Files/color.Rdata")
+load("~/Documents/GitHub/Data Analytics Term Project/Relevant Files/states.Rdata")
+load("~/Documents/GitHub/Data Analytics Term Project/Relevant Files/final_map.Rdata")
+load("~/Documents/GitHub/Data Analytics Term Project/Relevant Files/final_dataset.Rdata")
+load("~/Documents/GitHub/Data Analytics Term Project/Relevant Files/final_dataset.Rdata")
+
+
+
 ###BARCHART####
 
 #set variables to numeric
@@ -74,7 +83,7 @@ graph_1_color
 #Rename variables in dataset to be easier to work with
 names(dataset_final_new)[names(dataset_final_new) == "Precipitation (inches)"] <- "precip"
 names(dataset_final_new)[names(dataset_final_new) == "Average Temperature (degrees Fahrenheit)"] <- "avg_temp"
-
+names(final_dataset)[names(final_dataset) == "Coal-Fired (%)"] <- "coal"
 
 #Create a 2nd graph comparing rain and solar energy, I removed California in this graph because
 #it was a significant outlier.
@@ -226,7 +235,11 @@ outlier_map
 energy_map = tm_shape(final_map)+tm_polygons(col ="Renewables", palette =c("Greens"), title = "Renewable Energy (%)")
 energy_map
 
-
+ggplot(data = final_dataset, aes(x = Renewables, y = coal, col = state_category, label = state, group = state_category)) +
+  geom_point() + scale_color_manual(values=c("blue", "purple", "red")) + 
+  geom_text(hjust=1, vjust=1.5, size = 3) + 
+  ylab("coal") + 
+  xlab("Renewable Energy %") +  geom_smooth(method = "lm", se = FALSE)
 
 
 
