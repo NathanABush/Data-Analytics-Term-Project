@@ -23,7 +23,7 @@ dataset_final$`Total Expenditures ($ million)` =  as.numeric(dataset_final$"Tota
 hist(dataset_final$`Total Expenditures ($ million)`)
 dataset_final$GDP =  as.numeric(dataset_final$GDP)
 
-#Create seperate variables for blue, red, and mixed states based on pres vote and gov
+#Create separate variables for blue, red, and mixed states based on pres vote and gov
 dataset_final_red = dataset_final |> filter(red_red == 1)
 dataset_final_blue = dataset_final |> filter(blue_blue == 1) 
 dataset_final_mixed = dataset_final |> filter(blue_blue == 0 & red_red ==0)
@@ -207,15 +207,27 @@ states <- states(cb = TRUE)
 names(states)[names(states) == "STUSPS"] <- "state"
 map_1 <- left_join(final_dataset, states, by = "state")
 map_1 <- st_as_sf(map_1)
+
 final_map = map_1[-c(2), ]
 final_map = final_map[-c(10), ]
+
+hawaii_AK = map_1[-c(12:50), ]
+hawaii_AK = hawaii_AK[-c(3:10),]
+hawaii_AK = hawaii_AK[-c(1),]
+
 affiliation_map <- tm_shape(final_map)+tm_polygons(col ="state_category", palette = c(Blue = "blue", Red = "red", Purple = "purple"), title = "Political Category") 
 affiliation_map
+
+outlier_map <- tm_shape(hawaii_AK)+tm_polygons(col ="Renewables", palette =c("Greens"), title = "Renewable Energy (%)") 
+outlier_map
 
 #Create map showing renewable energy percentage
 
 energy_map = tm_shape(final_map)+tm_polygons(col ="Renewables", palette =c("Greens"), title = "Renewable Energy (%)")
 energy_map
+
+
+
 
 
 ###Data to Save for Markdown####
@@ -225,6 +237,7 @@ save(states, file = "states.Rdata")
 save(map_1, file = "map_1.Rdata")
 save(final_map, file = "final_map.Rdata")
 save(dataset_final_new, file = "dataset_final_new.Rdata")
+
 
 ###Regressions####
 library(estimatr)

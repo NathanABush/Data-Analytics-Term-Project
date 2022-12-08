@@ -12,6 +12,7 @@ library(estimatr)
 library(fixest)
 library(modelsummary)
 library(ggplot2)
+library(gridExtra)
 
 ### Clean Energy Data #### 
 election_2020 = read_csv("/Users/nathanbush/Desktop/Data Analytics/Term Project/2020 election results by county.csv")
@@ -323,7 +324,7 @@ graph_4 = ggplot(data = final_dataset, aes(x = new_solar, y = precip, col = stat
 #Compare graphs 2.1 and 4
 graph_4
 graph_2.1
-
+grid.arrange(graph_4, graph_2.1, ncol=2)
 #Adjust variable names to be easier to work with
 names(dataset_final_new)[names(dataset_final_new) == "Average Temperature (degrees Fahrenheit)"] <- "avg_temp"
 
