@@ -168,6 +168,7 @@ final_dataset$GDP =  as.numeric(final_dataset$GDP)
 final_dataset$avg_temp =  as.numeric(final_dataset$avg_temp)
 final_dataset$Renewables =  as.numeric(final_dataset$Renewables)
 final_dataset$precip =  as.numeric(final_dataset$precip)
+final_dataset <- rename(final_dataset, rep_gov = "republican governor")
 ```
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', results='hide'}
