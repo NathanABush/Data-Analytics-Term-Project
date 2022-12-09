@@ -5,6 +5,7 @@ date: "2022-11-08"
 output:
   html_document: default
   pdf_document: default
+  word_document: default
 ---
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
 library(tidyverse)
@@ -33,7 +34,7 @@ load("~/Documents/GitHub/Data Analytics Term Project/Relevant Files/final_datase
 
 ### REPORT
   
-In this analysis I compare the political leanings of states in the US with the their energy usage statistics and emissions. I am interested in understanding whether or not political views effect the type of energy states are using. This is important because it can effect and inform policy, show whether or not states are taking advantage of their natural resources, and help us understand a few of the dynamics behind energy systems and how politics plays a role in these systems. If we find that conservative leaning states tend to use less renewable energy than their state's natural resources provide, or that more liberal states tend to rely excessively on renewable energy when their state is relatively sparse in these resources, we can infer that more effective policy needs to be implemented to incentivize states to act more efficiently regarding their energy generation.
+In this analysis I compare the political leanings of states in the US with their energy usage statistics and emissions. I am interested in understanding whether state political views effect the type of energy states they are using. This is important because it can effect and inform policy, show whether or not states are taking advantage of their natural resources, and help us understand a few of the dynamics behind energy systems and how politics plays a role in these systems. If I find that conservative leaning states tend to use less renewable energy than their state's natural resources provide, or that more liberal states tend to rely excessively on renewable energy when their state is relatively sparse in these resources, it can be infered that more effective policy needs to be implemented to incentivize states to act more efficiently regarding their energy generation.
   
 The data I use in this analysis comes from three sources. My first data set is energy usage statistics on a wide variety of metrics in each state. This is taken from the US Energy Information Administration. Key variables of interest here are the percentages of  renewable energy, solar energy, petroleum, natural gas, and coal and as a percentage of the total energy use in the state. This data set also includes metrics of each state such as the average temperature, annual precipitation, and CO2 emissions. My second and third datasets are county voting data on the 2020 presidential election taken from the MIT Election and Data Science lab and the Harvard Dataverse. The key variables here are State, County, Candidate, # of votes in each county, and total votes. My third dataset is table that I webscraped from Wikipedia showing who each state's governor is and which political party they are associated with. My hypothesis is that a state who voted Republican in the 2020 election and has a republican governor is more conservative than a state that has a democratic governor but voted republican in the 2020 election. I will be able to test whether or not there is any significant difference in energy usage based on these observed differences by adding the governor variable to my analysis. 
 
@@ -158,7 +159,7 @@ graph_5.0 = ggplot(data = final_dataset, aes(x = new_solar, y = avg_temp, col = 
 graph_5.0
 ```
 
-In this graph I show the relationship between solar energy and average temperature by state. Intuition would lead us to believe that states with higher average temperatures employ more solar energy because they likely have more sunlight. I add local regressions to my graph to test whether or not this is the case. I find evidence that blue and red states are indeed employing more solar energy in states with hotter temperatures, while purple states are showing the opposite trend.Perhaps blue and red states are acting rationally in their own best interest, while purple states are unable to do so because of an entangled political environment. This MAY lend credence to our initial hypothesis that states with conflicting political interests are less efficient than states with more uniform political environments. 
+In this graph I show the relationship between solar energy and average temperature by state. Intuition would lead us to believe that states with higher average temperatures employ more solar energy because they likely have more sunlight. I add local regressions to my graph to test whether or not this is the case. I find evidence that blue and red states are indeed employing more solar energy in states with hotter temperatures, while purple states are showing the opposite trend. Perhaps blue and red states are acting rationally in their own best interest, while purple states are unable to do so because of an entangled political environment. This MAY lend credence to our initial hypothesis that states with conflicting political interests are less efficient than states with more uniform political environments. 
 
 
 
