@@ -20,7 +20,7 @@ library(equatiomatic)
 library(gridExtra)
 library(fixest)
 ```
-
+https://github.com/NathanABush/Data-Analytics-Term-Project/blob/main/Relevant%20Files/dataset_final.Rdata
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
 load("~/Documents/GitHub/Data Analytics Term Project/Relevant Files/dataset_final_new.Rdata")
@@ -29,7 +29,6 @@ load("~/Documents/GitHub/Data Analytics Term Project/Relevant Files/states.Rdata
 load("~/Documents/GitHub/Data Analytics Term Project/Relevant Files/final_map.Rdata")
 load("~/Documents/GitHub/Data Analytics Term Project/Relevant Files/final_dataset.Rdata")
 load("~/Documents/GitHub/Data Analytics Term Project/Relevant Files/final_dataset.Rdata")
-
 ```
 
 ### REPORT
@@ -219,4 +218,10 @@ For my final regression, I use the amount of solar energy per capita as my depen
 ### Conclusion
 
 In my analysis, I examined the differences between the amount of renewable energy generated as a percentage of total electricity consumption between state political categories in a descriptive manner to see if there were any potential discrepancies. I do find that on average, blue states have the highest percentage of renewable energy, while purple states have the least. Potential evidence exists that purple states may not be acting in accordance with their objective best interests in terms of energy production. One hypothesis for this being that they have a more diverse political climate that makes it more difficult to pass legislation of any sort. I also show that there are three distinct outliers regarding CO2 emissions per capita in the US, all red states.
+
+
+
+```{r}
+load("https://github.com/NathanABush/Data-Analytics-Term-Project/blob/main/Relevant%20Files/dataset_final.Rdata")
+```
 

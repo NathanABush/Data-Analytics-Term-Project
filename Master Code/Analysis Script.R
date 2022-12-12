@@ -14,6 +14,11 @@ library(fixest)
 library(modelsummary)
 library(ggplot2)
 
+
+setwd("SET YOUR WD TO WHERE YOU DOWNLOADED THE FILES")
+
+#Will need to Change Loaction of these files below to your WD
+
 load("~/Documents/GitHub/Data Analytics Term Project/Relevant Files/dataset_final_new.Rdata")
 load("~/Documents/GitHub/Data Analytics Term Project/Relevant Files/color.Rdata")
 load("~/Documents/GitHub/Data Analytics Term Project/Relevant Files/states.Rdata")
@@ -21,7 +26,7 @@ load("~/Documents/GitHub/Data Analytics Term Project/Relevant Files/final_map.Rd
 load("~/Documents/GitHub/Data Analytics Term Project/Relevant Files/final_dataset.Rdata")
 load("~/Documents/GitHub/Data Analytics Term Project/Relevant Files/final_dataset.Rdata")
 load("~/Documents/GitHub/Data Analytics Term Project/Relevant Files/dataset_final.Rdata")
-setwd("/Users/nathanbush/Documents/GitHub/Data Analytics Term Project/Master Code")
+
 
 ###BARCHART####
 
@@ -256,4 +261,19 @@ summary(reg_4)
 summary(reg_4) |> tidy()
 
 etable(reg_1,reg_2)
+
+
+
+#Save Files for Presentation
+setwd("/Users/nathanbush/Documents/GitHub/Data Analytics Term Project/Relevant Files")
+save(graph_1_color, file = "graph_1_color.Rdata")
+save(affiliation_map, file = "affiliation_map.Rdata")
+save(energy_map, file = "energy_map.Rdata")
+save(dot_plot, file = "dot_plot.Rdata")
+save(dot_plot_2, file = "dot_plot_2.Rdata")
+save(graph_6, file = "graph_6.Rdata")
+save(graph_6.0, file = "graph_6.0.Rdata")
+save(graph_6.0.1, file = "graph_6.0.1.Rdata")
+save(graph_5.0, file = "graph_5.0.Rdata")
+
 

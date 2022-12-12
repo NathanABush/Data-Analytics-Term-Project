@@ -14,6 +14,9 @@ library(fixest)
 library(modelsummary)
 library(ggplot2)
 
+setwd("SET YOUR WD TO WHERE YOU DOWNLOADED THE FILES")
+
+#Will need to Change Loaction of these files below to your WD
 election_2020 = read_csv("/Users/nathanbush/Desktop/Data Analytics/Term Project/2020 election results by county.csv")
 energy = read_csv("/Users/nathanbush/Documents/GitHub/Data Analytics Term Project/Raw Data/Energy Data.csv")
 president = read_csv("/Users/nathanbush/Documents/GitHub/Data Analytics Term Project/Raw Data/President Data (MIT).csv")
