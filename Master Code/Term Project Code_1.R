@@ -15,13 +15,14 @@ library(ggplot2)
 library(gridExtra)
 
 ### Clean Energy Data #### 
-setwd("SET YOUR WD TO WHERE YOU DOWNLOADED THE FILES")
+#SETYOURWDHERE
+setwd("/Users/nathanbush/Documents/GitHub/Data Analytics Term Project/Master Code")
 
 #Will need to Change Loaction of these files below to your WD
 
-election_2020 = read_csv("/Users/nathanbush/Desktop/Data Analytics/Term Project/2020 election results by county.csv")
-energy = read_csv("/Users/nathanbush/Documents/GitHub/Data-Analytics-Term-Project/Raw Data/Energy Data.csv")
-president = read_csv("/Users/nathanbush/Documents/GitHub/Data-Analytics-Term-Project/Raw Data/President Data (MIT).csv")
+
+energy = read_csv("/Users/nathanbush/Documents/GitHub/Data Analytics Term Project/Raw Data/Energy Data.csv")
+president = read_csv("/Users/nathanbush/Documents/GitHub/Data Analytics Term Project/Raw Data/President Data (MIT).csv")
 
 
 
@@ -135,8 +136,6 @@ president_final = president_7[,-c(3:4)]#Remove DC from the observations
 president_final = president_final[-c(9),]
 
 #Presidential data is now clean and ready to merge
-
-###Clean Election Data####
 
 
 ###Governors Data####
@@ -332,7 +331,9 @@ grid.arrange(graph_4, graph_2.1, ncol=2)
 #Adjust variable names to be easier to work with
 names(dataset_final_new)[names(dataset_final_new) == "Average Temperature (degrees Fahrenheit)"] <- "avg_temp"
 
-#Create a 5th graph (removed outlier of Alaska here)
+#Create a 5th graph 
+final_dataset[11,6] = 75
+#Above I added average temperature in Hawaii from NOAA since it was only missing value in my data. Not the best practice but important in this context. 
 graph_5.0 = ggplot(data = final_dataset, aes(x = new_solar, y = avg_temp, col = state_category, label = state, group = state_category)) +
   geom_point() + scale_color_manual(values=c("blue", "purple", "red")) + 
   geom_text(hjust=1, vjust=1.5, size = 3) + 
@@ -400,18 +401,6 @@ energy_map
 
 #Save dataset 
 save(final_dataset, file = "final_dataset.Rdata")
-
-
-
-
-DATA TO SAVE
-color
-states
-final_final
-(affiliation_map & energy_map)
-dataset_final_new
-final_dataset
-
 save(final_dataset, file = "final_dataset.Rdata")
 save(color, file = "color.Rdata")
 save(states, file = "states.Rdata")

@@ -20,7 +20,6 @@ library(equatiomatic)
 library(gridExtra)
 library(fixest)
 ```
-https://github.com/NathanABush/Data-Analytics-Term-Project/blob/main/Relevant%20Files/dataset_final.Rdata
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
 load("~/Documents/GitHub/Data Analytics Term Project/Relevant Files/dataset_final_new.Rdata")
@@ -33,7 +32,7 @@ load("~/Documents/GitHub/Data Analytics Term Project/Relevant Files/final_datase
 
 ### REPORT
   
-In this analysis I compare the political leanings of states in the US with their energy usage statistics and emissions. I am interested in understanding whether the political views of states effect the type of energy they are using. This is important because it can effect and inform policy, show whether or not states are taking advantage of their natural resources, and help us understand a few of the dynamics behind energy systems and how politics plays a role in these systems. If I find that conservative leaning states  use less renewable energy than their state's natural resources provide, or that liberal states rely excessively on renewable energy when their state is relatively sparse in these resources, it can be inferred that more effective policy needs to be implemented to incentivize states to act more efficiently regarding their energy generation.
+In this analysis I compare the political leanings of states in the US with their energy usage statistics. I am interested in understanding whether the political views of states effect the type of energy they are using. This is important because it can effect and inform policy, show whether or not states are taking advantage of their natural resources, and help us understand a few of the dynamics behind energy systems and how politics plays a role in these systems. If I find that conservative leaning states  use less renewable energy than their state's natural resources provide, or that liberal states rely excessively on renewable energy when their state is relatively sparse in these resources, it can be inferred that more effective policy needs to be implemented to incentivize states to act more efficiently regarding their energy generation.
   
 The data I use in this analysis comes from three sources. My first data set is energy usage statistics on a wide variety of metrics in each state. This is taken from the US Energy Information Administration. Key variables of interest here are the percentages of  renewable energy, solar energy, petroleum, natural gas, and coal and as a percentage of the total energy use in the state. This data set also includes metrics of each state such as the average temperature, annual precipitation, and CO2 emissions. My second and third datasets are county voting data from the 2020 presidential election taken from the MIT Election and Data Science lab and the Harvard Dataverse. The key variables here are State, County, Candidate, number of votes in each county, and total votes. My third dataset is a table that I webscraped from Wikipedia showing who each state's governor is and which political party they are associated with. My hypothesis is that a state who voted Republican in the 2020 election and has a republican governor is more conservative than a state that has a democratic governor but voted republican in the 2020 election. I will be able to test whether or not there is any significant difference in energy usage based on these observed differences by adding the governor variable to my analysis. 
 
@@ -150,6 +149,8 @@ I included the three graphs above to show my data visualization process and why 
 
 ### Visualization 8
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
+final_dataset[11,6] = 75
+#Above I added average temperature in Hawaii from NOAA since it was only missing value in my data. Not the best practice but important in this context. 
 graph_5.0 = ggplot(data = final_dataset, aes(x = new_solar, y = avg_temp, col = state_category, label = state, group = state_category)) +
   geom_point() + scale_color_manual(values=c("blue", "purple", "red")) + 
   geom_text(hjust=1, vjust=1.5, size = 3) + 
@@ -219,9 +220,4 @@ For my final regression, I use the amount of solar energy per capita as my depen
 
 In my analysis, I examined the differences between the amount of renewable energy generated as a percentage of total electricity consumption between state political categories in a descriptive manner to see if there were any potential discrepancies. I do find that on average, blue states have the highest percentage of renewable energy, while purple states have the least. Potential evidence exists that purple states may not be acting in accordance with their objective best interests in terms of energy production. One hypothesis for this being that they have a more diverse political climate that makes it more difficult to pass legislation of any sort. I also show that there are three distinct outliers regarding CO2 emissions per capita in the US, all red states.
 
-
-
-```{r}
-load("https://github.com/NathanABush/Data-Analytics-Term-Project/blob/main/Relevant%20Files/dataset_final.Rdata")
-```
 

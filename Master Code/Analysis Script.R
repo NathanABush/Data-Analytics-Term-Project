@@ -14,8 +14,8 @@ library(fixest)
 library(modelsummary)
 library(ggplot2)
 
-
-setwd("SET YOUR WD TO WHERE YOU DOWNLOADED THE FILES")
+#SET YOUR WD TO WHERE YOU DOWNLOADED THE FILES
+setwd("/Users/nathanbush/Documents/GitHub/Data Analytics Term Project/Master Code")
 
 #Will need to Change Loaction of these files below to your WD
 
@@ -148,6 +148,8 @@ names(dataset_final_new)[names(dataset_final_new) == "Average Temperature (degre
 
 ###GRAPH 5####
 #Create a 5th graph (removed outlier of Alaska here...no data available)
+final_dataset[11,6] = 75
+#Above I added average temperature in Hawaii from NOAA since it was only missing value in my data. Not the best practice but important in this context. 
 graph_5.0 = final_dataset |>
   filter(state != "AK") |>
   ggplot(aes(x = new_solar, y = avg_temp, col = state_category, label = state, group = state_category)) +
@@ -155,6 +157,7 @@ graph_5.0 = final_dataset |>
   geom_text(hjust=1, vjust=1.5, size = 3) + 
   ylab("Average Temperature") + 
   xlab("Solar Energy") + geom_smooth(method="lm", se = FALSE)
+
 graph_5.0
 
 #Log Solar variable for analysis purposes
@@ -275,5 +278,6 @@ save(graph_6, file = "graph_6.Rdata")
 save(graph_6.0, file = "graph_6.0.Rdata")
 save(graph_6.0.1, file = "graph_6.0.1.Rdata")
 save(graph_5.0, file = "graph_5.0.Rdata")
+
 
 
